@@ -186,6 +186,19 @@ func (p *Podcast) Latest() *PodcastEpisode {
 	return &PodcastEpisode{newest}
 }
 
+func (p *Podcast) Episodes() []*PodcastEpisode {
+	p.Refresh()
+	if p.feed == nil || p.feed.Items == nil || len(p.feed.Items) == 0 {
+		log.Println("no items")
+		return nil
+	}
+	eps := make([]*PodcastEpisode, len(p.feed.Items))
+	for i, item := range p.feed.Items {
+		eps[i] = &PodcastEpisode{item}
+	}
+	return eps
+}
+
 func (p *Podcast) MarkListened(ep *PodcastEpisode) {
 	if ep.UpdatedParsed != nil {
 		p.lastPlayed = *ep.UpdatedParsed
